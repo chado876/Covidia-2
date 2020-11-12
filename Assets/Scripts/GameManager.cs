@@ -1,0 +1,153 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class GameManager : MonoBehaviour {
+
+    public enum GameState
+    {
+        PLAY, PACMAN_DYING, PACMAN_DEAD, GAME_OVER, GAME_WON
+    };
+    public GameState gameState = GameState.PLAY;
+    [Range(1,10)]
+    public float ghostVulnerableDuration = 7.0f;//how long the ghosts should be vulnerable for
+    [Range(1,5)]
+    public float ghostVulnerableEndWarningDuration = 2.0f;
+    
+    public Image gameWonScreen;
+    public Image gameOverScreen;
+
+    public GameObject pacman;
+    public AnimationClip pacmanDeathAnimation;
+    public List<GameObject> ghosts;
+    public List<GameObject> pills;
+
+    public AudioSource pacmanKilledSound;
+    public AudioSource gameWonSound;
+    public AudioSource gameOverSound;
+
+    private static GameManager instance;
+    private float respawnTime;
+    private float invulnerableTime = 0;//when the ghosts will become invulnerable again
+
+	// Use this for initialization
+	void Start () {
+		if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+        gameOverScreen.enabled = false;
+        gameWonScreen.enabled = false;
+    }
+	
+	// Update is called once per frame
+	void Update () {
+		switch (gameState)
+        {
+            case GameState.PLAY:
+                bool foundPill = false;
+                foreach (GameObject pill in pills)
+                {
+                    if (pill.activeSelf)
+                    {
+                        foundPill = true;
+                        break;
+                    }
+                }
+                if (!foundPill)
+                {
+                    gameState = GameState.GAME_WON;
+                }
+                break;
+            case GameState.PACMAN_DYING:
+                if (Time.time > respawnTime)
+                {
+                    //gameState = GameState.PACMAN_DEAD;
+                    //respawnTime = Time.time + 1;
+                    //pacman.SetActive(false);
+                }
+                break;
+            case GameState.PACMAN_DEAD:
+                if (Time.time > respawnTime)
+                {
+                    //gameState = GameState.PLAY;
+                    pacman.SetActive(true);
+                    PlayerController playerController = pacman.GetComponent<PlayerController>();
+                    playerController.setLivesLeft(playerController.livesLeft - 1);
+                    if (playerController.livesLeft >= 0)
+                    {
+                        playerController.setAlive(true);
+                    }
+                    else
+                    {
+                        gameState = GameState.GAME_OVER;
+                    }
+
+                }
+                break;
+            case GameState.GAME_OVER:
+                gameOverScreen.enabled = true;
+                gameWonScreen.enabled = false;
+                if (!gameOverSound.isPlaying)
+                {
+                    gameOverSound.Play();
+                }
+                if (Input.anyKeyDown)
+                {
+                    resetGame();
+                   // gameState = GameState.PLAY;
+                    gameOverScreen.enabled = false;
+                    gameWonScreen.enabled = false;
+                }
+                break;
+            case GameState.GAME_WON:
+                gameOverScreen.enabled = false;
+                gameWonScreen.enabled = true;
+                if (!gameWonSound.isPlaying)
+                {
+                    gameWonSound.Play();
+                }
+                if (Input.anyKeyDown)
+                {
+                    resetGame();
+                    //gameState = GameState.PLAY;
+                    gameOverScreen.enabled = false;
+                    gameWonScreen.enabled = false;
+                }
+                break;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
+	}
+
+    public static void pacmanKilled()
+    {
+        instance.pacman.GetComponent<PlayerController>().setAlive(false);
+        instance.gameState = GameState.PACMAN_DYING;
+        instance.respawnTime = Time.time + instance.pacmanDeathAnimation.length;
+        //instance.pacmanKilledSound.Play();
+
+    }
+
+    public void resetGame()
+    {
+        PlayerController playerController = pacman.GetComponent<PlayerController>();
+        playerController.setLivesLeft(2);
+        playerController.setAlive(true);
+
+        foreach (GameObject pill in pills)
+        {
+            pill.SetActive(true);
+        }
+    }
+
+
+}
