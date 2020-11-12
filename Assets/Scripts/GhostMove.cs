@@ -38,11 +38,17 @@ public Transform[] waypoints;
     }
 	
 	void OnTriggerEnter2D(Collider2D co) {
-    if (co.name == "face")
-        Destroy(co.gameObject);
+    if (co.name == "face"){
+			    PlayerController playerController = co.gameObject.GetComponent<PlayerController>();
+				
+        //Destroy(co.gameObject);
+		playerController.decreaseLife();
+		playerController.lifeCheck();
 	            //ghostEatenSound.Play();
+	}
+		
 
-}
+	}
 
     public void setKilled(bool isKilled)
     {

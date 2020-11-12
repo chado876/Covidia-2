@@ -7,11 +7,9 @@ public class PlayerController : MonoBehaviour {
 
  public float speed;//the speed pacman can travel
     public int score = 0;//the score
-    public int livesLeft = 2;//how many extras lives pacman has left
-
-    public Text scoreText;//the Text UI Component that shows the score
-    public Image life1;
-    public Image life2;
+    public int lives = 2;//how many extras lives pacman has left
+	public int life = 2;
+	    public int livesLeft = 2;//how many extras lives pacman has left
 
     private Vector2 direction;//the direction pacman is going
     private bool alive = true;
@@ -21,6 +19,7 @@ public class PlayerController : MonoBehaviour {
     private Animator anim;
 	
 	private Sprite faceSprite, maskFaceSprite;
+	public Image heart1,heart2;
 	
 	SpriteRenderer mySpriteRenderer;
 	
@@ -30,14 +29,14 @@ public class PlayerController : MonoBehaviour {
         rb2d = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
 	mySpriteRenderer = GetComponent<SpriteRenderer>();
-			Debug.Log(mySpriteRenderer.sprite.name);
 		maskFaceSprite =Resources.Load<Sprite>("Sprites/Characters/face_mask");
 
 
 	}
 	
 	void FixedUpdate () {
-        anim.SetFloat("currentSpeed", rb2d.velocity.magnitude);
+		if(alive){
+		anim.SetFloat("currentSpeed", rb2d.velocity.magnitude);
 		if (Input.GetAxis("Horizontal") < 0)
         {
             direction = Vector2.left;
@@ -65,8 +64,8 @@ public class PlayerController : MonoBehaviour {
             transform.position = new Vector2(transform.position.x, Mathf.Round(transform.position.y));
         }
     
-	
-	    
+		
+		}    
 }
   void OnCollisionEnter2D(Collision2D other)
      {
@@ -90,7 +89,6 @@ public class PlayerController : MonoBehaviour {
     public void addPoints(int pointsToAdd)
     {
         score += pointsToAdd;
-        scoreText.text = ""+score;
     }
 
     public void setAlive(bool isAlive)
@@ -100,8 +98,39 @@ public class PlayerController : MonoBehaviour {
 
     public void setLivesLeft(int lives)
     {
-        livesLeft = lives;
-        life1.enabled = livesLeft >= 1;
-        life2.enabled = livesLeft >= 2;
+        life = lives;
+		if(life<2){
+			heart1.enabled = false;
+		}
+
     }
+	
+	    public void lifeCheck()
+    {
+		if(life == 1){
+			heart1.enabled = false;
+		} else if (life == 0){
+			heart2.enabled = false;
+			
+		}
+
+    }
+	
+		public int getLives()
+	{
+		return life;
+	}
+	
+	public void setLives(int num)
+	{
+		life = num;
+	}
+	
+	public void decreaseLife(){
+		life = life - 1;
+		if(life == 0){
+			setAlive(false);
+			
+		}
+	}
 }

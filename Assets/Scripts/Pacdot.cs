@@ -22,8 +22,9 @@ public class Pacdot : MonoBehaviour
     }
 	
 	    protected virtual void collected2(Collider2D coll)
-    {
-        coll.gameObject.GetComponent<PlayerController>().addPoints(points);
+    {	
+		ScoreScript.scoreValue += 100;
+        //coll.gameObject.GetComponent<PlayerController>().addPoints(points);
         AudioSource.PlayClipAtPoint(collectSound, transform.position);
         gameObject.SetActive(false);
     }
@@ -34,7 +35,8 @@ void OnTriggerEnter2D(Collider2D co) {
 		Destroy(gameObject); 
 	}
                }
-
+			   
+			   
 }
 
 
