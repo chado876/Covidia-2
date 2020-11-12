@@ -6,6 +6,7 @@ TagManager:
   tags:
   - mask
   - face
+  - HealthBar
   layers:
   - Default
   - TransparentFX

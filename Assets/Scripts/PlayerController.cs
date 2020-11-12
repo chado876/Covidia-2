@@ -14,6 +14,9 @@ public class PlayerController : MonoBehaviour {
     private Vector2 direction;//the direction pacman is going
     private bool alive = true;
 
+	public int maxHealth = 100;
+	public int currentHealth;
+	
     //References
     private Rigidbody2D rb2d;
     private Animator anim;
@@ -21,16 +24,20 @@ public class PlayerController : MonoBehaviour {
 	private Sprite faceSprite, maskFaceSprite;
 	public Image heart1,heart2;
 	
+	public HealthBar healthBar;
+	
 	SpriteRenderer mySpriteRenderer;
 	
 
 	// Use this for initialization
 	void Start () {
+		
+		currentHealth = maxHealth;
         rb2d = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
 	mySpriteRenderer = GetComponent<SpriteRenderer>();
 		maskFaceSprite =Resources.Load<Sprite>("Sprites/Characters/face_mask");
-
+		healthBar.SetMaxHealth(maxHealth);
 
 	}
 	
@@ -127,10 +134,17 @@ public class PlayerController : MonoBehaviour {
 	}
 	
 	public void decreaseLife(){
-		life = life - 1;
-		if(life == 0){
-			setAlive(false);
-			
-		}
+		//life = life - 1;
+		//if(life == 0){
+		//	setAlive(false);
+		//}
+		
+		TakeDamage(10);
+	}
+	
+	public void TakeDamage(int damage)
+	{
+		currentHealth -= damage;
+		healthBar.SetHealth(currentHealth);
 	}
 }
