@@ -14,7 +14,10 @@ public Transform[] waypoints;
     private Rigidbody2D rb2d;
     private CircleCollider2D cc2d;
     private SpriteRenderer sr;
-    private AudioSource ghostEatenSound;
+    public AudioClip killSound;
+	public AudioClip coughSound;
+	public GameObject stateManager;
+
 	
     public float speed = 0.3f;
 
@@ -22,7 +25,6 @@ public Transform[] waypoints;
         rb2d = GetComponent<Rigidbody2D>();
         cc2d = GetComponent<CircleCollider2D>();
         sr = GetComponent<SpriteRenderer>();
-        ghostEatenSound = GetComponent<AudioSource>();
     }
 	
     void FixedUpdate () {
@@ -37,32 +39,35 @@ public Transform[] waypoints;
     else cur = (cur + 1) % waypoints.Length;
     }
 	
-	void OnTriggerEnter2D(Collider2D co) {
+	public void OnTriggerEnter2D(Collider2D co) {
+	PlayerController playerController = co.gameObject.GetComponent<PlayerController>();
+
     if (co.name == "face"){
-			    PlayerController playerController = co.gameObject.GetComponent<PlayerController>();
+		if(playerController.isSanitized){
+				StateManager sm = stateManager.GetComponent<StateManager>();
+				sm.covidKilled = true;
+				AudioSource.PlayClipAtPoint(killSound, transform.position);
+				gameObject.SetActive(false);
+				// yield return new WaitForSeconds (7f);
+				 //gameObject.SetActive(true);
+
+
+			} else if (playerController.isMasked) {
 				
-        //Destroy(co.gameObject);
+			} else {
+		AudioSource.PlayClipAtPoint(coughSound, transform.position);
 		playerController.decreaseLife();
 		playerController.lifeCheck();
+			}
+				
+        //Destroy(co.gameObject);
+
 	            //ghostEatenSound.Play();
 	}
 		
-
+	
 	}
 
-    public void setKilled(bool isKilled)
-    {
-        killed = isKilled;
-        if (killed)
-        {
-            cc2d.enabled = false;
-           // ghostEatenSound.Play();
-        }
-        else
-        {
-            cc2d.enabled = true;
-        }
-    }
 	
 
 }

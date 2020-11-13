@@ -32,7 +32,7 @@ public class Pacdot : MonoBehaviour
 void OnTriggerEnter2D(Collider2D co) {
 	if (co.name == "face"){
 		collected2(co);
-		Destroy(gameObject); 
+	gameObject.SetActive(false);
 	}
                }
 			   

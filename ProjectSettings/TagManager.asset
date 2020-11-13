@@ -7,6 +7,9 @@ TagManager:
   - mask
   - face
   - HealthBar
+  - covid
+  - melon
+  - sanitizer
   layers:
   - Default
   - TransparentFX
