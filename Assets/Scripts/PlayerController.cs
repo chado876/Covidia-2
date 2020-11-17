@@ -175,7 +175,7 @@ public class PlayerController: MonoBehaviour
 		sm.alive2 = false;
 		}
 
-		TakeDamage(25);
+		TakeDamage(15);
 	}
 
 	public void Sanitize(bool val)
