@@ -15,8 +15,7 @@ public class VaccineScript : MonoBehaviour
 			AudioSource.PlayClipAtPoint(collectSound, transform.position);
 			playerController = other.gameObject.GetComponent<PlayerController>();
 			playerController.regenHealth();
-			gameObject.SetActive(false);
-			isActive = false;
+			Destroy(gameObject);
 
 		}
 		
