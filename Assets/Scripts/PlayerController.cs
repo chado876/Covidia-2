@@ -18,6 +18,8 @@ public class PlayerController: MonoBehaviour
 	public int maxHealth = 100;
 	public int currentHealth;
 
+private Vector2 fp; // first finger position
+private Vector2 lp; // last finger position
 	public GameObject stateManager;
 	
 	//References
@@ -29,7 +31,11 @@ public class PlayerController: MonoBehaviour
 	public HealthBar healthBar;
 
 	SpriteRenderer mySpriteRenderer;
-
+	
+	public Vector2 startPos;
+    public bool directionChosen;
+	
+	public float x1, x2;
 	// Use this for initialization
 	void Start()
 	{
@@ -45,29 +51,68 @@ public class PlayerController: MonoBehaviour
 	{
 
 		if(alive){
+			if (Application.platform == RuntimePlatform.Android){ 
+			
+			foreach(Touch touch in Input.touches){
+				if (touch.phase == TouchPhase.Began)
+{
+fp = touch.position;
+lp = touch.position;
+}
+if (touch.phase == TouchPhase.Moved )
+{
+lp = touch.position;
+}
+if(touch.phase == TouchPhase.Ended)
+{
+if((fp.x - lp.x) > 80) // left swipe
+{
+			direction = Vector2.left;
+}
+} else if((fp.x - lp.x) < -80) // right swipe
+{
+			direction = Vector2.right;
+} else if((fp.y - lp.y) < -80 ) // up swipe
+{
+			direction = Vector2.up;
+}else if((fp.y - lp.y) > 80 ) // up swipe
+{
+			direction = Vector2.down;
+}
+			}
+			
+			rb2d.velocity = direction * speed;
+		transform.up = direction;
+		if (rb2d.velocity.x == 0)
+		{
+			transform.position = new Vector2(Mathf.Round(transform.position.x), transform.position.y);
+		}
+
+		if (rb2d.velocity.y == 0)
+		{
+			transform.position = new Vector2(transform.position.x, Mathf.Round(transform.position.y));
+		}
+ } else {
+ 
 		if (Input.GetAxis("Horizontal") < 0)
 		{
 			direction = Vector2.left;
-					            Debug.Log("You are holding down the 'left' on the Trigger");
 
 		}
 		else if (Input.GetAxis("Horizontal") > 0)
 		{
 			direction = Vector2.right;
-								            Debug.Log("You are holding down the 'right' on the Trigger");
 
 		}
 
 		if (Input.GetAxis("Vertical") < 0)
 		{
 			direction = Vector2.down;
-								            Debug.Log("You are holding down the 'down' on the Trigger");
 
 		}
 		else if (Input.GetAxis("Vertical") > 0)
 		{
 			direction = Vector2.up;
-								            Debug.Log("You are holding down the '' on the Trigger");
 
 		}
 
@@ -84,6 +129,7 @@ public class PlayerController: MonoBehaviour
 		}
 
 		}    
+		}
 	}
 
 	IEnumerator OnCollisionEnter2D(Collision2D other)
@@ -170,12 +216,16 @@ public class PlayerController: MonoBehaviour
 	{
 			StateManager sm = stateManager.GetComponent<StateManager>();
 
-		if(currentHealth == 0){
+		if(currentHealth <= 0){
 		setAlive(false);
 		sm.alive2 = false;
+		mySpriteRenderer.sprite = Resources.Load<Sprite>("Sprites/skull");
+
+		} else {
+		TakeDamage(15);
+
 		}
 
-		TakeDamage(15);
 	}
 
 	public void Sanitize(bool val)
@@ -203,4 +253,7 @@ public class PlayerController: MonoBehaviour
 		currentHealth = maxHealth;
 		healthBar.SetHealth(currentHealth);
 	}
+	
+	
 }
+

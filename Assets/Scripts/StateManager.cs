@@ -62,6 +62,8 @@ public class StateManager : MonoBehaviour
 			
 			case GameState.GAME_OVER:
 				AudioSource.PlayClipAtPoint(playerDead, transform.position);
+				Invoke("gameOverScreen",3f);
+
 				break;
 			case GameState.GAME_WON:
 				AudioSource.PlayClipAtPoint(gameWonSound, transform.position);
@@ -114,6 +116,10 @@ public class StateManager : MonoBehaviour
 	
 	void setEnemyActive(){
 		
+	}
+	
+	void gameOverScreen(){
+		Application.LoadLevel("GameOverScene");
 	}
 	
 	
